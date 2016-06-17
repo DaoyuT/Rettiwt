@@ -3,10 +3,6 @@ import tweepy
 import json
 from kafka import KafkaProducer
 
-ckey = 'VpaEFU28gqdj2hWF6HWX4T7vm'
-csecret = 'TFx9R6LSpJQAIgeypflR7osTbRqPuiYw8PM98ocT1NprL6IHTA'
-atoken = '4167206710-o67meh2UwYNrKxKeJebeUsnDXJSkKZZQTCVIkE1'
-asecret = 'NUeYqPt2DJCZFBj43naelDF650EKe6EfX9uddgfOtJGXO'
 
 topic = "tweet_stream"
 producer = KafkaProducer(bootstrap_servers='ec2-52-22-61-135.compute-1.amazonaws.com:9092')
