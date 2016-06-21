@@ -17,10 +17,15 @@
     </plugins>
   </build>
   <dependencies>
-  	<dependency>
-  		<groupId>com.datastax.cassandra</groupId>
-  		<artifactId>cassandra-driver-core</artifactId>
-  		<version>3.0.0</version>
-  	</dependency>
+    <dependency>
+      <groupId>com.datastax.cassandra</groupId>
+      <artifactId>cassandra-driver-core</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>biz.paluch.redis</groupId>
+      <artifactId>lettuce</artifactId>
+      <version>3.4.3.Final</version>
+  </dependency>
   </dependencies>
 </project>

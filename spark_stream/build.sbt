@@ -12,7 +12,11 @@ libraryDependencies ++= Seq(
 
 "org.apache.spark" % "spark-streaming_2.10" % "1.3.0" % "provided",
 
-"org.apache.spark" % "spark-streaming-kafka_2.10" % "1.3.0"
+"org.apache.spark" % "spark-streaming-kafka_2.10" % "1.3.0",
+
+"com.datastax.spark" %% "spark-cassandra-connector" % "1.6.0",
+
+"com.datastax.cassandra" % "cassandra-driver-core" % "3.0.0"
 
 )
 

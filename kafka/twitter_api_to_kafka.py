@@ -2,10 +2,19 @@ import sys
 import tweepy
 import json
 from kafka import KafkaProducer
+import ConfigParser
 
+config = ConfigParser.ConfigParser()
+config.read("./kafka.conf")
 
-topic = "tweet_stream"
-producer = KafkaProducer(bootstrap_servers='ec2-52-22-61-135.compute-1.amazonaws.com:9092')
+ckey = config.get('KafkaConfig', 'ckey')
+csecret = config.get('KafkaConfig', 'csecret')
+atoken = config.get('KafkaConfig', 'atoken')
+asecret = config.get('KafkaConfig', 'asecret')
+kafka_node_dns = config.get('KafkaConfig', 'kafka_node_dns')
+topic = config.get('KafkaConfig', 'topic')
+
+producer = KafkaProducer(bootstrap_servers = kafka_node_dns + ':9092')
 
 class TweetStreamProducer(tweepy.StreamListener):
 
