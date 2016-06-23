@@ -16,7 +16,7 @@ import java.lang.Long
 import java.io.File
 import com.typesafe.config.{ Config, ConfigFactory }
 
-object TweetDataStreaming {
+object TweetDataStreaming_Denorm {
 
   val TWITTER_DATE_FORMAT:String = "EEE MMM dd HH:mm:ss Z yyyy"
   val CASSANDRA_TIMESTAMP_FORMAT:String = "yyyy-MM-dd HH:mm:ssZ"
@@ -24,7 +24,7 @@ object TweetDataStreaming {
   val cassandraTimestampFormat = new SimpleDateFormat(CASSANDRA_TIMESTAMP_FORMAT, Locale.ENGLISH);
 
   def main(args: Array[String]) {
-    
+
     val configPath = System.getProperty("user.dir")
     val seperator = System.getProperty("file.separator")
     val config = ConfigFactory.parseFile(new File(configPath + seperator + "conf" + seperator + "spark_streaming.conf"))
@@ -83,30 +83,16 @@ object TweetDataStreaming {
         })
 
         import com.datastax.spark.connector.writer._
-        tweetsStream.map(x => (x._1, x._5)).saveToCassandra(key_space, "tweets", SomeColumns("tid", "tweet"), writeConf = WriteConf(ttl = TTLOption.constant(cassandra_ttl)))
-        val tweetsStreamReduced = tweetsStream.map(x => (x._1, x._2, x._3, x._4))
-        tweetsStreamReduced.map(x => (x._2, x._4,x._1)).saveToCassandra(key_space, "homepages", SomeColumns("uid", "time", "tid"), writeConf = WriteConf(ttl = TTLOption.constant(cassandra_ttl)))
+        tweetsStream.map(x => (x._2, x._4,x._5)).saveToCassandra(key_space, "historytweets", SomeColumns("uid", "time", "tweet"), writeConf = WriteConf(ttl = TTLOption.constant(cassandra_ttl)))
 
         tweetsStream.filter(_._3 != null).map(tweet => {
                                               tweet._3.map( follower => {
-                                                (follower, tweet._4, tweet._1)
+                                                (follower, tweet._4, tweet._5)
                                               })
-        }).flatMap(x => x.map(y => y)).saveToCassandra(key_space, "inboxes", SomeColumns("uid", "time", "tid"), writeConf = WriteConf(ttl = TTLOption.constant(cassandra_ttl)))
+        }).flatMap(x => x.map(y => y)).saveToCassandra(key_space, "feedslists", SomeColumns("uid", "time", "tweet"), writeConf = WriteConf(ttl = TTLOption.constant(cassandra_ttl)))
     }
+
     ssc.start()
     ssc.awaitTermination()
-  }
-}
-
-/** Instantiated singleton instance of SparkConfSingleton */
-
-object SparkConfSingleton extends Serializable {
-  private var instance: SparkConf = null
-  
-  def getInstance(appName: String, cassandra_seed_public_dns: String, spark_master: String): SparkConf = {
-    if (instance == null) {
-      instance = new SparkConf().setAppName(appName).set("spark.cassandra.connection.host", cassandra_seed_public_dns).setMaster("spark://" + spark_master + ":7077")
-    }
-    instance
   }
 }

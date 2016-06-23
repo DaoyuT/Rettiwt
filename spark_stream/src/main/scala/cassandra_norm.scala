@@ -16,7 +16,7 @@ import java.lang.Long
 import java.io.File
 import com.typesafe.config.{ Config, ConfigFactory }
 
-object TweetDataStreaming {
+object TweetDataStreaming_Norm {
 
   val TWITTER_DATE_FORMAT:String = "EEE MMM dd HH:mm:ss Z yyyy"
   val CASSANDRA_TIMESTAMP_FORMAT:String = "yyyy-MM-dd HH:mm:ssZ"
@@ -95,18 +95,5 @@ object TweetDataStreaming {
     }
     ssc.start()
     ssc.awaitTermination()
-  }
-}
-
-/** Instantiated singleton instance of SparkConfSingleton */
-
-object SparkConfSingleton extends Serializable {
-  private var instance: SparkConf = null
-  
-  def getInstance(appName: String, cassandra_seed_public_dns: String, spark_master: String): SparkConf = {
-    if (instance == null) {
-      instance = new SparkConf().setAppName(appName).set("spark.cassandra.connection.host", cassandra_seed_public_dns).setMaster("spark://" + spark_master + ":7077")
-    }
-    instance
   }
 }

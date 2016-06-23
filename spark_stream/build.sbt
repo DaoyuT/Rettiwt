@@ -16,7 +16,10 @@ libraryDependencies ++= Seq(
 
 "com.datastax.spark" %% "spark-cassandra-connector" % "1.6.0",
 
-"com.datastax.cassandra" % "cassandra-driver-core" % "3.0.0"
+"com.datastax.cassandra" % "cassandra-driver-core" % "3.0.0",
+
+"biz.paluch.redis" % "lettuce" % "3.4.3.Final"
+
 
 )
 

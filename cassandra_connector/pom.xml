@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>CassandraConnector</groupId>
-  <artifactId>CassandraConnector</artifactId>
+  <groupId>FollowersGenerator</groupId>
+  <artifactId>FollowersGenerator</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -17,15 +17,25 @@
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>com.datastax.cassandra</groupId>
-      <artifactId>cassandra-driver-core</artifactId>
-      <version>3.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>biz.paluch.redis</groupId>
-      <artifactId>lettuce</artifactId>
-      <version>3.4.3.Final</version>
-  </dependency>
+  	<dependency>
+  		<groupId>com.datastax.cassandra</groupId>
+  		<artifactId>cassandra-driver-core</artifactId>
+  		<version>3.0.0</version>
+  	</dependency>
+  	<dependency>
+	    <groupId>biz.paluch.redis</groupId>
+	    <artifactId>lettuce</artifactId>
+	    <version>3.4.3.Final</version>
+	</dependency>
+	<dependency>
+	    <groupId>redis.clients</groupId>
+	    <artifactId>jedis</artifactId>
+	    <version>2.7.3</version>
+	</dependency>
+	<dependency>
+	    <groupId>com.typesafe</groupId>
+	    <artifactId>config</artifactId>
+	    <version>1.2.1</version>
+	</dependency>
   </dependencies>
 </project>

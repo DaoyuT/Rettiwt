@@ -2,8 +2,9 @@ import kafka.serializer.StringDecoder
 import org.apache.spark.streaming._
 import org.apache.spark.streaming.kafka._
 import org.apache.spark.SparkConf
-import org.apache.spark.rdd.RDD
 import org.apache.spark.SparkContext
+import org.apache.spark.streaming.StreamingContext
+import org.apache.spark.rdd.RDD
 import org.apache.spark.sql._
 import com.datastax.spark.connector._
 import com.datastax.spark.connector.streaming._
@@ -13,10 +14,12 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.{Date, Locale}
 import java.lang.Long
+import collection.JavaConverters._
+import com.lambdaworks.redis._
 import java.io.File
 import com.typesafe.config.{ Config, ConfigFactory }
 
-object TweetDataStreaming {
+object TweetDataStreaming_Redis_Denorm {
 
   val TWITTER_DATE_FORMAT:String = "EEE MMM dd HH:mm:ss Z yyyy"
   val CASSANDRA_TIMESTAMP_FORMAT:String = "yyyy-MM-dd HH:mm:ssZ"
@@ -24,14 +27,15 @@ object TweetDataStreaming {
   val cassandraTimestampFormat = new SimpleDateFormat(CASSANDRA_TIMESTAMP_FORMAT, Locale.ENGLISH);
 
   def main(args: Array[String]) {
-    
+      
     val configPath = System.getProperty("user.dir")
     val seperator = System.getProperty("file.separator")
     val config = ConfigFactory.parseFile(new File(configPath + seperator + "conf" + seperator + "spark_streaming.conf"))
-    
+            
     val duration = config.getInt("process_duration")
     val cassandra_ttl = config.getInt("cassandra_ttl")
     val n:Long = config.getLong("n")
+    val redis_pass:String = config.getString("redis_pass")
     val spark_master:String = config.getString("spark_master")
     val topics:String = config.getString("topics")
     val appName:String = config.getString("appName")
@@ -65,48 +69,22 @@ object TweetDataStreaming {
                                   val user:Map[String,Any] = tweet.get("user").get.asInstanceOf[Map[String, Any]]
                                   val uid:Long = user.get("id_str").get.asInstanceOf[String].toLong % n
 
-                                  import com.datastax.spark.connector.cql.CassandraConnector
-                                  import com.datastax.driver.core.ResultSet
-                                  import com.datastax.driver.core.Row
-                                  import collection.JavaConverters._
-                                  
-                                  val conf = SparkConfSingleton.getInstance(appName, cassandra_seed_public_dns, spark_master)
-                                  var resultSet:ResultSet = null
-                                  CassandraConnector(conf).withSessionDo { session =>
-                                       resultSet = session.execute( s"SELECT followerslist FROM rettiwt.followerslists WHERE uid = $uid")
-                                  }
-                                  var followerslist:Set[Long] = null
-                                  if (!resultSet.isExhausted) {
-                                    followerslist = resultSet.one.getSet("followerslist", classOf[java.lang.Long]).asScala.toSet
-                                  }
+                                  val connection = SerializedRedisConnection.getInstance(redis_pass, spark_master)
+                                  val followerslist:List[String] = connection.lrange("followers_" + uid, 0, -1).asScala.toList
                                   (tid, uid, followerslist, created_at, rawTweet)
         })
 
         import com.datastax.spark.connector.writer._
-        tweetsStream.map(x => (x._1, x._5)).saveToCassandra(key_space, "tweets", SomeColumns("tid", "tweet"), writeConf = WriteConf(ttl = TTLOption.constant(cassandra_ttl)))
-        val tweetsStreamReduced = tweetsStream.map(x => (x._1, x._2, x._3, x._4))
-        tweetsStreamReduced.map(x => (x._2, x._4,x._1)).saveToCassandra(key_space, "homepages", SomeColumns("uid", "time", "tid"), writeConf = WriteConf(ttl = TTLOption.constant(cassandra_ttl)))
+        tweetsStream.map(x => (x._2, x._4,x._5)).saveToCassandra(key_space, "historytweets", SomeColumns("uid", "time", "tweet"), writeConf = WriteConf(ttl = TTLOption.constant(cassandra_ttl)))
 
         tweetsStream.filter(_._3 != null).map(tweet => {
                                               tweet._3.map( follower => {
-                                                (follower, tweet._4, tweet._1)
+                                                (follower.toLong, tweet._4, tweet._5)
                                               })
-        }).flatMap(x => x.map(y => y)).saveToCassandra(key_space, "inboxes", SomeColumns("uid", "time", "tid"), writeConf = WriteConf(ttl = TTLOption.constant(cassandra_ttl)))
+        }).flatMap(x => x.map(y => y)).saveToCassandra(key_space, "feedslists", SomeColumns("uid", "time", "tweet"), writeConf = WriteConf(ttl = TTLOption.constant(cassandra_ttl)))
     }
+
     ssc.start()
     ssc.awaitTermination()
-  }
-}
-
-/** Instantiated singleton instance of SparkConfSingleton */
-
-object SparkConfSingleton extends Serializable {
-  private var instance: SparkConf = null
-  
-  def getInstance(appName: String, cassandra_seed_public_dns: String, spark_master: String): SparkConf = {
-    if (instance == null) {
-      instance = new SparkConf().setAppName(appName).set("spark.cassandra.connection.host", cassandra_seed_public_dns).setMaster("spark://" + spark_master + ":7077")
-    }
-    instance
   }
 }

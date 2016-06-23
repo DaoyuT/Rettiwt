@@ -19,9 +19,9 @@ producer = KafkaProducer(bootstrap_servers = kafka_node_dns + ':9092')
 class TweetStreamProducer(tweepy.StreamListener):
 
     def on_data(self, data):
+        producer.send(topic, str(data))
         json_data = json.loads(data)
         print str(json_data['id']), " sent"
-        producer.send(topic, str(data))
         return True
 
     def on_error(self, status_code):
