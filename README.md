@@ -1,2 +1,2 @@
 #Rettiwt
-Chech it out at [daoyu.online](https://daoyu.online/)!
+Chech it out at [daoyu.online](https://www.daoyu.online/)!
