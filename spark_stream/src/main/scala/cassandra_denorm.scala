@@ -41,7 +41,7 @@ object TweetDataStreaming_Denorm {
     val topicsSet = topics.split(",").toSet
     val sparkConf = SparkConfSingleton.getInstance(appName, cassandra_seed_public_dns, spark_master)
 
-    // Create context with 2 second batch interval
+    // Create context with batch interval
 
     val ssc = new StreamingContext(sparkConf, Seconds(duration))
 
@@ -57,6 +57,8 @@ object TweetDataStreaming_Denorm {
         val lines = rdd.map(_._2)
         val tweetsStream = lines.map( rawTweet => {
 
+                                  // Parse raw data to json
+
                                   val json:Option[Any] = JSON.parseFull(rawTweet)
                                   val tweet:Map[String,Any] = json.get.asInstanceOf[Map[String, Any]]
                                   val tid:Long = tweet.get("id_str").get.asInstanceOf[String].toLong
@@ -64,6 +66,9 @@ object TweetDataStreaming_Denorm {
                                   val created_at:String = cassandraTimestampFormat.format(twitterDateFormat.parse(time))
                                   val user:Map[String,Any] = tweet.get("user").get.asInstanceOf[Map[String, Any]]
                                   val uid:Long = user.get("id_str").get.asInstanceOf[String].toLong % n
+
+
+                                  // Query for followers
 
                                   import com.datastax.spark.connector.cql.CassandraConnector
                                   import com.datastax.driver.core.ResultSet
@@ -76,11 +81,19 @@ object TweetDataStreaming_Denorm {
                                        resultSet = session.execute( s"SELECT followerslist FROM rettiwt.followerslists WHERE uid = $uid")
                                   }
                                   var followerslist:Set[Long] = null
+                                  
+                                  // User 0 will listen to all tweets
+
+                                  val listener:Long = 0                                  
                                   if (!resultSet.isExhausted) {
-                                    followerslist = resultSet.one.getSet("followerslist", classOf[java.lang.Long]).asScala.toSet
+                                    val followers = resultSet.one.getSet("followerslist", classOf[java.lang.Long])
+                                    followers.add(listener)
+                                    followerslist = followers.asScala.toSet
                                   }
                                   (tid, uid, followerslist, created_at, rawTweet)
         })
+
+        // Save data
 
         import com.datastax.spark.connector.writer._
         tweetsStream.map(x => (x._2, x._4,x._5)).saveToCassandra(key_space, "historytweets", SomeColumns("uid", "time", "tweet"), writeConf = WriteConf(ttl = TTLOption.constant(cassandra_ttl)))

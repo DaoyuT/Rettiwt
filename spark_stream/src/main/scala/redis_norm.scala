@@ -45,7 +45,7 @@ object TweetDataStreaming_Redis_Norm {
     val topicsSet = topics.split(",").toSet
     val sparkConf = SparkConfSingleton.getInstance(appName, cassandra_seed_public_dns, spark_master)
 
-    // Create context with 2 second batch interval
+    // Create context with batch interval
 
     val ssc = new StreamingContext(sparkConf, Seconds(duration))
     
@@ -62,6 +62,8 @@ object TweetDataStreaming_Redis_Norm {
         val lines = rdd.map(_._2)
         val tweetsStream = lines.map( rawTweet => {
 
+                                  // Parse raw data to json
+
                                   val json:Option[Any] = JSON.parseFull(rawTweet)
                                   val tweet:Map[String,Any] = json.get.asInstanceOf[Map[String, Any]]
                                   val tid:Long = tweet.get("id_str").get.asInstanceOf[String].toLong
@@ -70,10 +72,14 @@ object TweetDataStreaming_Redis_Norm {
                                   val user:Map[String,Any] = tweet.get("user").get.asInstanceOf[Map[String, Any]]
                                   val uid:Long = user.get("id_str").get.asInstanceOf[String].toLong % n
                                   
+                                  // Query for followers
+                                  
                                   val connection = SerializedRedisConnection.getInstance(redis_pass, spark_master)
                                   val followerslist:List[String] = connection.lrange("followers_" + uid, 0, -1).asScala.toList
                                   (tid, uid, followerslist, created_at, rawTweet)
         })
+
+        // Save data
 
         import com.datastax.spark.connector.writer._
         tweetsStream.map(x => (x._1, x._5)).saveToCassandra(key_space, "tweets", SomeColumns("tid", "tweet"), writeConf = WriteConf(ttl = TTLOption.constant(cassandra_ttl)))

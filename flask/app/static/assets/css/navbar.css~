@@ -1,0 +1,15 @@
+body {
+  min-height: 1000px;
+  padding-top: 70px;
+}
+.bot-buffer { 
+  margin-bottom:20px; 
+}
+a.disabled {
+  pointer-events: none;
+  cursor: default;
+  color: orange
+}
+a.link_to_twitter{
+  font-weight: bold;
+}

@@ -85,7 +85,7 @@ public class GenerateFollowers {
     if(!resultSet.isExhausted()) {
       System.out.println(resultSet.one().getSet(0, Long.class).toString());
     }
-    connection.rpush("mylist", "1230", "1234");   //rpush("mylist", "1234123124 12312412312 12314123");
+    connection.rpush("mylist", "1230", "1234");
     List<String> value = connection.lrange("mylist", 0, -1);
     System.out.println(value);
   }
