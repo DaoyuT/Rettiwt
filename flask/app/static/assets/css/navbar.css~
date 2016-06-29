@@ -5,11 +5,13 @@ body {
 .bot-buffer { 
   margin-bottom:20px; 
 }
-a.disabled {
+.disabled {
   pointer-events: none;
   cursor: default;
   color: orange
 }
-a.link_to_twitter{
-  font-weight: bold;
+img {
+  display: block;
+  margin-top: 5px;
+  margin-right: 5px;
 }

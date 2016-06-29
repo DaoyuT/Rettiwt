@@ -1,5 +1,6 @@
 #!/bin/bash
 
+tmux kill-session -t rettiwt
 tmux new-session -s rettiwt -n bash -d
 tmux new-window -t 1
 tmux send-keys -t rettiwt:1 'cd kafka' C-m

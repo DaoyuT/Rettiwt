@@ -5,7 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="author" content="Daoyu Tu">
+    <link rel="icon" href="../../static/img/rettiwt-logo.png">
+    <base href="http://www.daoyu.online/">
 
     <title>{{user.uname}}`s Home</title>
 
@@ -43,19 +45,19 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Rettiwt</a>
+          <a href="#" class="navbar-left"><img src="../../static/img/rettiwt-logo.png" class="img-responsive" width="40" height="40"> </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li id="home_btn" class="active"><a href="http://daoyu.online/home_page/{{ user.uid }}/0">Home</a></li>
+            <li id="home_btn" class="active"><a href="home_page/{{ user.uid }}/0">Home</a></li>
             <li><a href="#about">About</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Hi, {{user.uname}}!<span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li id="profile_btn"><a href="http://daoyu.online/profile/{{ user.uid }}/0">View Profile</a></li>
-                <li><a href="http://daoyu.online">Logout</a></li>
+                <li id="profile_btn"><a href="profile/{{ user.uid }}/0">View Profile</a></li>
+                <li><a href="#">Logout</a></li>
               </ul>
             </li>
           </ul>
@@ -82,7 +84,7 @@
         </div>
       {% endfor %}
       <div class="col-md-offset-8 col-md-4 bot-buffer">
-        <a href="http://daoyu.online/home_page/{{user.uid}}/{{user.numOfTweet}}" class="btn btn-block btn-lg btn-primary">More tweets!</a>
+        <a href="home_page/{{user.uid}}/{{user.numOfTweet}}" class="btn btn-block btn-lg btn-primary">More tweets!</a>
       </div>
       <div></div>
       {% else %}
@@ -109,6 +111,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="../../static/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript">
+
       $(function() {
         var mode = '{{mode}}';
         if(mode == 'profile') {
