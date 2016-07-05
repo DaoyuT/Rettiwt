@@ -9,7 +9,7 @@
     <link rel="icon" href="../../static/img/rettiwt-logo.png">
     <base href="http://www.daoyu.online/">
 
-    <title>{{user.uname}}`s Home</title>
+    <title>About Author</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../../static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -19,6 +19,7 @@
 
     <!-- Custom styles for this template -->
     <link href="../../static/assets/css/navbar.css" rel="stylesheet">
+    <link href="../../static/assets/css/about.css" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -29,6 +30,12 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Suez+One" rel="stylesheet">
   </head>
 
   <body>
@@ -49,8 +56,8 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li id="home_btn" class="active"><a href="home_page/{{ user.uid }}/0">Home</a></li>
-            <li><a href="#about">About</a></li>
+            <li id="home_btn" class="active" onclick="toHome()"><a href="home_page/{{ user.uid }}/0">Home</a></li>
+            <li id="about_btn" onclick="toAbout()"><a style="cursor:pointer">About Author</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
@@ -104,6 +111,23 @@
 
     </div> <!-- /container -->
 
+    <div class="container hidden" id="about">
+    <div class="jumbotron" >
+      <div class="fb-profile">
+          <img align="left" class="fb-image-lg" src="../../static/img/background.jpg" alt="Profile image example"/>
+          <img align="left" class="fb-image-profile thumbnail" src="../../static/img/Daoyu.jpg" alt="Profile image example"/>
+          <div class="fb-profile-text">
+              <h1 style="font-family: 'Suez One', serif;">Daoyu Tu</h1>
+              <ul style="font-size: 20px;">
+                <li><i class="fa fa-envelope-square"></i> dytu0316@gmail.com</li>
+                <li><a href="http://www.github.com/dytu0316"><i class="fa fa-github-square"></i> github.com/dytu0316</a></li>
+                <li><a href="http://www.linkedin.com/in/daoyu-tu"><i class="fa fa-linkedin-square"></i> linkedin.com/in/daoyu-tu</a></li>
+              </ul>
+          </div>
+      </div>
+    </div>
+    </div>
+
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -131,6 +155,21 @@
         });
         $('#tweets').removeClass("hidden");
       });
+
+      function toHome(){
+        $('#tweets').removeClass("hidden");
+        $('#about').addClass("hidden");
+        $('#home_btn').addClass("active");
+        $('#about_btn').removeClass("active");
+      }
+
+      function toAbout(){
+        $('#tweets').addClass("hidden");
+        $('#about').removeClass("hidden");
+        $('#about_btn').addClass("active");
+        $('#home_btn').removeClass("active");
+      }
+
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="../../static/assets/js/ie10-viewport-bug-workaround.js"></script>
