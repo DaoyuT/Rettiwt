@@ -19,10 +19,6 @@ body
 @media (max-width:768px)
 {
         
-    .fb-profile-text>h1{
-        font-weight: 700;
-        font-size:16px;
-    }
 
     .fb-image-profile
     {

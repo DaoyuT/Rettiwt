@@ -56,9 +56,9 @@ def home_page(uid, n):
     json_response.append(tweet_simple)
   user = {'uid' : uid, 'uname' : username, 'numOfTweet' : numOfTweet}
   if json_response:
-    return render_template("home_page.html", tweets=json_response, user=user, mode='home')
+    return render_template("home_page.html", tweets=json_response, user=user)
   else:
-    return render_template("home_page.html", user=user, mode='home')
+    return render_template("home_page.html", user=user)
 
 @app.route('/profile/<uid>/<n>')
 def profile(uid, n):

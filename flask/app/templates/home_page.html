@@ -9,7 +9,7 @@
     <link rel="icon" href="../../static/img/rettiwt-logo.png">
     <base href="http://www.daoyu.online/">
 
-    <title>About Author</title>
+    <title>{{user.uname}}'s Homepage</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../../static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -91,7 +91,11 @@
         </div>
       {% endfor %}
       <div class="col-md-offset-8 col-md-4 bot-buffer">
+        {% if mode %}
+        <a href="profile/{{user.uid}}/{{user.numOfTweet}}" class="btn btn-block btn-lg btn-primary">More tweets!</a>
+        {% else %}
         <a href="home_page/{{user.uid}}/{{user.numOfTweet}}" class="btn btn-block btn-lg btn-primary">More tweets!</a>
+        {% endif %}
       </div>
       <div></div>
       {% else %}
@@ -117,8 +121,8 @@
           <img align="left" class="fb-image-lg" src="../../static/img/background.jpg" alt="Profile image example"/>
           <img align="left" class="fb-image-profile thumbnail" src="../../static/img/Daoyu.jpg" alt="Profile image example"/>
           <div class="fb-profile-text">
-              <h1 style="font-family: 'Suez One', serif;">Daoyu Tu</h1>
-              <ul style="font-size: 20px;">
+              <h1 style="font-family: 'Suez One', serif;font-size:5vw;">Daoyu Tu</h1>
+              <ul style="font-size:3vw;">
                 <li><i class="fa fa-envelope-square"></i> dytu0316@gmail.com</li>
                 <li><a href="http://www.github.com/dytu0316"><i class="fa fa-github-square"></i> github.com/dytu0316</a></li>
                 <li><a href="http://www.linkedin.com/in/daoyu-tu"><i class="fa fa-linkedin-square"></i> linkedin.com/in/daoyu-tu</a></li>
@@ -139,8 +143,6 @@
       $(function() {
         var mode = '{{mode}}';
         if(mode == 'profile') {
-          console.log("profile2");
-          //$('#link_to_twitter').addClass("disabled");
           $('[name="link"]').each(function() {$(this).addClass("disabled");});
           $('#home_btn').removeClass("active");
           $('#profile_btn').addClass("active");
