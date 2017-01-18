@@ -11,4 +11,4 @@ if [ $# -ne 1 ]; then
 	tmux send-keys -t rettiwt:2 './run.sh' C-m
 else
 	tmux send-keys -t rettiwt:2 './run.sh '"$1"'' C-m
-if
+fi
